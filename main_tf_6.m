@@ -101,22 +101,20 @@ C_eq
 C_lin = eval(C_eq);
 D_lin = zeros(1,2)
 %%
-% A = eval(A_eq);
-% B = eval(B_eq);
-% C = zeros(2,8);
-% C(1,1) = 1;
-% C(2,2) = 1;
-% D = zeros(1,1);
-% 
-% %D = zeros(8,1);
-% %D = eval(D)
-% %%
-% Ts = -1;
-% %Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-% Plant = ss(A,[B B],C,D)
-% Q = 5; % A number greater than zero
-% R = 5*diag(ones(2,1)); % A number greater than zero
+A = eval(A_eq);
+B = eval(B_eq);
+C = [ 0 , 0  , Ks , ds , -Ks , -ds, 0  ]  ;
+D = zeros(1,1);
+
+%D = zeros(8,1);
+%D = eval(D)
+%%
+Ts = -1;
+%Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
+Plant = ss(A,B,C,D)
+Q = .5; % A number greater than zero
+R = .5*ones(1,1); % A number greater than zero
 % %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-% [kalmf,L,~,M,Z] = kalman(Plant,Q,R);
+[kalmf,L,~,M,Z] = kalman(Plant,Q,R);
 % 
 % %%
