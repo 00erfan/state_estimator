@@ -120,18 +120,17 @@ R = .5*diag(ones(1,2)); % A number greater than zero
 % 
 %% LQR CONTROL %%%%%%%%%%%%%%%
 % 
-% Q_lqr = zeros(50,50);l
+% Q_lqr = zeros(50,50);
 % Q_lqr(44,44) = 5*10e9;
 % Q_lqr(50,50) = 1*10e8;
 % 
 % R_lqr = 1e3;
 
 
-Q_lqr = zeros(7,7);
-Q_lqr(5,5) = 10;
-Q_lqr(7,7) = 10;
+Q_lqr = eye(7,7);
+Q_lqr = .1 .* Q_lqr
 
-R_lqr = 1e2 .* eye(2,2);
+R_lqr = 1e2;
 
 %%%%%    u25   = x(44);
 %%%%%      q   = x(50);
