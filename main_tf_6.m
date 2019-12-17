@@ -129,8 +129,8 @@ R = .5*diag(ones(1,2)); % A number greater than zero
 
 
 Q_lqr = zeros(7,7);
-Q_lqr(5,5) = 10;
-Q_lqr(7,7) = 10;
+Q_lqr(5,5) = 10e5;
+Q_lqr(7,7) = 10e5;
 
 R_lqr = 1e2 .* eye(2,2);
 
