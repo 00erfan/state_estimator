@@ -91,6 +91,7 @@ W = 75;                               % Human Weight
 Jh = 5.02;                            % Inertia of Trunk [kg. m2]
 dh = 0.75;                            % Damping of Trunk [Nm.Sec/rad]
 Vel_mot_nom = 263;                    % Nominal motor speed [rad/sec]
+Trq_mot_nom = .56;                    % Nominal motor torque [Nm]
 
 %%
 A_eq 
