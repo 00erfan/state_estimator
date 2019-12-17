@@ -119,23 +119,23 @@ R = .5*diag(ones(1,2)); % A number greater than zero
 % %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
 [kalmf,L,~,M,Z] = kalman(Plant,Q,R);
 % 
-%% LQR CONTROL %%%%%%%%%%%%%%%
+% %% LQR CONTROL %%%%%%%%%%%%%%%
+% % 
+% % Q_lqr = zeros(50,50);l
+% % Q_lqr(44,44) = 5*10e9;
+% % Q_lqr(50,50) = 1*10e8;
+% % 
+% % R_lqr = 1e3;
 % 
-% Q_lqr = zeros(50,50);l
-% Q_lqr(44,44) = 5*10e9;
-% Q_lqr(50,50) = 1*10e8;
 % 
-% R_lqr = 1e3;
-
-
-Q_lqr = zeros(7,7);
-Q_lqr(5,5) = 10e5;
-Q_lqr(7,7) = 10e5;
-
-R_lqr = 1e2 .* eye(2,2);
-
-%%%%%    u25   = x(44);
-%%%%%      q   = x(50);
-
-[K_lqr , S_lqr , e_lqr ] = lqr( A_lin , B_lin , Q_lqr , R_lqr ) ;
+% Q_lqr = zeros(7,7);
+% Q_lqr(5,5) = 10e5;
+% Q_lqr(7,7) = 10e5;
+% 
+% R_lqr = 1e2 .* eye(2,2);
+% 
+% %%%%%    u25   = x(44);
+% %%%%%      q   = x(50);
+% 
+% [K_lqr , S_lqr , e_lqr ] = lqr( A_lin , B_lin , Q_lqr , R_lqr ) ;
 
