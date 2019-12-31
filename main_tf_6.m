@@ -113,9 +113,9 @@ D = zeros(1,1);
 %%
 Ts = -1;
 %Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,B,C,D)
-Q = .5; % A number greater than zero
-R = .5*diag(ones(1,2)); % A number greater than zero
+Plant = ss(A,[B B],C,D)
+Q = .05*diag(ones(1,1)); % A number greater than zero
+R = .05*diag(ones(1,2)); % A number greater than zero
 % %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
 [kalmf,L,~,M,Z] = kalman(Plant,Q,R);
 % 
