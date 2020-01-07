@@ -1,9 +1,0 @@
-
-%%
-REF_DATA = ref_data.signals.values;
-TEMPO = ref_data.time;
-
-figure
-hold on
-set(gca,'FontSize',25)
-plot( TEMPO , REF_DATA  , 'LineWidth' , 5);grid;shg
