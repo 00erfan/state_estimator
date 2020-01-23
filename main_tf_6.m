@@ -104,48 +104,55 @@ D_lin = zeros(1,2)
 %%
 A = eval(A_eq)
 B = eval(B_eq)
-C = [ 1 , 0  , 0  ,  0 ,  0  ,  0 , 0;
+B_1 = B(:,1)
+B_2 = B(:,2)
+C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
       0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
-D = zeros(1,1)
+D = zeros(2,1)
+D_k = zeros(2,2);
 
-%D = zeros(8,1);
-%D = eval(D)
 %%
-%%
-sys = ss(A,B,C,D);
-figure
-hold on
-%grid on
-set(gca,'FontSize',25)
-pzmap(sys, 'b' );%grid;shg
-sgrid
+% sys = ss(A,B_1,C,D);
+% figure
+% hold on
+% grid on
+% set(gca,'FontSize',25)
+% pzmap(sys, 'b' );%grid;shg
+% sgrid
 % Create ylabel
-ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-    'HorizontalAlignment','center',...
-    'FontSize',25,...
-    'Visible','on');
-
+% ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
+%     'HorizontalAlignment','center',...
+%     'FontSize',25,...
+%     'Visible','on');
+% 
 % Create xlabel
-xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-    'HorizontalAlignment','center',...
-    'FontSize',25,...
-    'Visible','on');
-
+% xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
+%     'HorizontalAlignment','center',...
+%     'FontSize',25,...
+%     'Visible','on');
+% 
 % Create title
-title('Pole-Zero Map','HitTest','off','Units','pixels',...
-    'HorizontalAlignment','center',...
-    'FontWeight','bold',...
-    'FontSize',25);
+% title('Pole-Zero Map','HitTest','off','Units','pixels',...
+%     'HorizontalAlignment','center',...
+%     'FontWeight','bold',...
+%     'FontSize',25);
 
 %%
 Ts = -1;
 %Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,[B B],C,D)
-Q = .05*diag(ones(1,1)); % A number greater than zero
-R = .05*diag(ones(1,2)); % A number greater than zero
+Plant = ss(A,B,C,D_k)
+
+Q = .5; % Process noise variance
+%R = diag([1.003 1.003]); % Sensor noise variance
+R = .5*diag(ones(1,2));
+
 % %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-[kalmf,L,~,M,Z] = kalman(Plant,Q,R);
+[kalmf,L,~,M,Z] = kalman(Plant,Q,R)
+
 %%
+Q_lqr = 100*eye(7,7);
+R_lqr = 2*eye(2,2);
+[K,S,P] = lqr( A , B , Q_lqr , R_lqr )
 
 
 
