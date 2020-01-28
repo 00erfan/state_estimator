@@ -74,6 +74,9 @@ TF = simplify(  C_eq*[ (s*eye(ns,ns) - A_eq )^(-1) ]*B_eq  + D_eq , 'Steps',100 
 pretty(TF)
 disp(' ')
 
+%%
+
+
 %% System Parametes from Data sheet
 J_act = [0.000306 +  0.28200e-04];    % Inertia of motor rotor + harmonic drive , kilogram metre squared [kg. m2]
 rg = 160;                             % Gear Ratio of harmonic drive
@@ -93,6 +96,8 @@ dh = 0.75;                            % Damping of Trunk [Nm.Sec/rad]
 Vel_mot_nom = 263;                    % Nominal motor speed [rad/sec]
 Trq_mot_nom = .56;                    % Nominal motor torque [Nm]
 
+Ts = -1;                              % Sampling Time
+
 %%
 A_eq 
 A_lin = eval(A_eq);
@@ -101,19 +106,35 @@ B_lin = eval(B_eq);
 C_eq
 C_lin = eval(C_eq);
 D_lin = zeros(1,2)
-%%
+
 A = eval(A_eq)
 B = eval(B_eq)
-B_1 = B(:,1)
-B_2 = B(:,2)
 C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
       0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
-D = zeros(2,1)
+ 
+D = 0
 
-C_lqr = [ 0 , 0  , 0  ,  0 ,  Kh  ,  0 , -Kh];
-D_k = zeros(2,2);
+C_lq = [ 0 , 0  , 0 , 0 , Kh , 0, -Kh  ];
 
-sys_lqr =  ss(A,B,C_lqr,0)
+sys_sys = ss(A,B,C_lq,0)
+
+
+%%
+% nx = 7;    %Number of states
+% ny = 1;    %Number of outputs
+% %Qn = [4 2 0; 2 1 0; 0 0 1];
+% Qn = 2e4.*ones( nx , nx );
+% Rn = [.5];
+% R = eye(2,2);
+% QXU = blkdiag(0.1*eye(nx),R);
+% QWV = blkdiag(Qn,Rn);
+% %QWV = rand(8,8);
+% QI = eye(ny);
+% %%
+% %KLQG = lqg(sys_lqr,QXU,QWV)
+% KLQG1 = lqg(sys_sys,QXU,QWV,QI,'1dof')
+% 
+
 
 %%
 % sys = ss(A,B_1,C,D);
@@ -152,11 +173,8 @@ R = .5*diag(ones(1,2));
 
 % %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
 [kalmf,L,~,M,Z] = kalman(Plant,Q,R)
+% 
 
-%%
-Q_lqr = 5e5*eye(7,7);
-R_lqr = 2*eye(2,2);
-[K,S,P] = lqr( sys_lqr , Q_lqr , R_lqr )
 
 
 

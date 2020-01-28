@@ -60,7 +60,7 @@ ns = length(vars_mat_form); % Number of States
 A_eq = A;
 Bt = -nB;
 
-[B_eq,~] = equationsToMatrix( Bt , [ Tm , tetad_h  ] );
+[B_eq,~] = equationsToMatrix( Bt , [ Tm  ] );
 C_eq = [ 0 , 0  , Ks , ds , -Ks , -ds, 0  ]  ;
 D_eq = [ 0 , 0 ]; 
 
@@ -93,6 +93,8 @@ dh = 0.75;                            % Damping of Trunk [Nm.Sec/rad]
 Vel_mot_nom = 263;                    % Nominal motor speed [rad/sec]
 Trq_mot_nom = .56;                    % Nominal motor torque [Nm]
 
+Ts = -1;                              % Sampling Time
+
 %%
 A_eq 
 A_lin = eval(A_eq);
@@ -101,62 +103,21 @@ B_lin = eval(B_eq);
 C_eq
 C_lin = eval(C_eq);
 D_lin = zeros(1,2)
-%%
+
 A = eval(A_eq)
 B = eval(B_eq)
-B_1 = B(:,1)
-B_2 = B(:,2)
 C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
       0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
-D = zeros(2,1)
+ 
+D = 0
 
-C_lqr = [ 0 , 0  , 0  ,  0 ,  Kh  ,  0 , -Kh];
-D_k = zeros(2,2);
+C_lq = [ 0 , 0  , 0 , 0 , Kh , 0, -Kh  ];
 
-sys_lqr =  ss(A,B,C_lqr,0)
-
-%%
-% sys = ss(A,B_1,C,D);
-% figure
-% hold on
-% grid on
-% set(gca,'FontSize',25)
-% pzmap(sys, 'b' );%grid;shg
-% sgrid
-% Create ylabel
-% ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create xlabel
-% xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create title
-% title('Pole-Zero Map','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontWeight','bold',...
-%     'FontSize',25);
+sys_sys = ss(A,B,eye(7,7),0)
+sys_lq = ss(A,B,C_lq,0)
 
 %%
-Ts = -1;
-%Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,B,C,0)
-
-Q = .5; % Process noise variance
-%R = diag([1.003 1.003]); % Sensor noise variance
-R = .5*diag(ones(1,2));
-
-% %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-[kalmf,L,~,M,Z] = kalman(Plant,Q,R)
-
-%%
-Q_lqr = 5e5*eye(7,7);
-R_lqr = 2*eye(2,2);
-[K,S,P] = lqr( sys_lqr , Q_lqr , R_lqr )
-
-
-
+%solving for optimal gain K
+Q = 1e14.*eye(8,8);
+R = 10;
+K=lqi(sys_lq,Q,R);

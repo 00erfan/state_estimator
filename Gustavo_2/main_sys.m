@@ -93,6 +93,8 @@ dh = 0.75;                            % Damping of Trunk [Nm.Sec/rad]
 Vel_mot_nom = 263;                    % Nominal motor speed [rad/sec]
 Trq_mot_nom = .56;                    % Nominal motor torque [Nm]
 
+Ts = -1;                              % Sampling Time
+
 %%
 A_eq 
 A_lin = eval(A_eq);
@@ -101,62 +103,34 @@ B_lin = eval(B_eq);
 C_eq
 C_lin = eval(C_eq);
 D_lin = zeros(1,2)
-%%
+
 A = eval(A_eq)
 B = eval(B_eq)
-B_1 = B(:,1)
-B_2 = B(:,2)
 C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
-      0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
-D = zeros(2,1)
+      0 , 0  , Ks , ds , -Ks , -ds, 0  ]  % Measurement matrix 
+ 
+D = 0
 
-C_lqr = [ 0 , 0  , 0  ,  0 ,  Kh  ,  0 , -Kh];
-D_k = zeros(2,2);
+%C_lq = [ 0 , 0  , 0 , 0 , Kh , 0, -Kh  ];
 
-sys_lqr =  ss(A,B,C_lqr,0)
-
-%%
-% sys = ss(A,B_1,C,D);
-% figure
-% hold on
-% grid on
-% set(gca,'FontSize',25)
-% pzmap(sys, 'b' );%grid;shg
-% sgrid
-% Create ylabel
-% ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create xlabel
-% xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create title
-% title('Pole-Zero Map','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontWeight','bold',...
-%     'FontSize',25);
+sys_sys = ss(A,B,C,0)   % Steady Space for the Model with 7 states
 
 %%
-Ts = -1;
-%Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,B,C,0)
-
-Q = .5; % Process noise variance
-%R = diag([1.003 1.003]); % Sensor noise variance
-R = .5*diag(ones(1,2));
-
-% %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-[kalmf,L,~,M,Z] = kalman(Plant,Q,R)
-
+Qk = .5; % Process noise variance
+Rk = .5*diag(ones(1,2));
+[kest,L,P] = kalman(sys_sys,Qk,Rk);
 %%
-Q_lqr = 5e5*eye(7,7);
-R_lqr = 2*eye(2,2);
-[K,S,P] = lqr( sys_lqr , Q_lqr , R_lqr )
+load('cntl_sys.mat')    % Load the data from the controller
+C_ctl = C_ctl;          % The signal for calculating the inout error to the controller
+sys_cntl = sys_ctl;     % Steady Space for the controller with 6 states without human velocity
 
-
-
+%% LQG Contoller Design
+nx = 6;    %Number of states
+ny = 1;    %Number of outputs
+Qn = 5.*eye(nx,nx);
+Rn = 1;
+R = [.5]
+QXU = blkdiag(0.1*eye(nx),R);
+QWV = blkdiag(Qn,Rn);
+QI = eye(ny);
+KLQG1 = lqg(sys_cntl,QXU,QWV,QI,'1dof')
