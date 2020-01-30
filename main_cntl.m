@@ -19,6 +19,7 @@ syms  tau_h tau_m                        % Torque by Trunk , Torque by BDC motor
 syms  rg         % Gearbox ratio 
 syms  bm         % Friction between motor and gearbox
 syms  Tm         % Motor Torque 
+syms  Td
 %%
 syms TETA_H TETAD_H TETADD_H
 syms TETA_EXT TETAD_EXT TETADD_EXT
@@ -31,51 +32,33 @@ syms TETA_ACT TETAD_ACT TETADD_ACT
 
 eqns = [ Tm - bm*tetad_act - J_act*TETADD_ACT - (Kg/rg)*( (teta_act/rg) - teta_int ) - (dgs/rg)*( (tetad_act/rg) - tetad_int ) - (dg/rg)*(tetad_act/rg) == 0 ,
          Kg*( (teta_act/rg) - teta_int ) + dgs*( (tetad_act/rg) - tetad_int ) - Js_int*TETADD_INT - Ks*(teta_int - teta_ext) - ds*(tetad_int - tetad_ext) == 0 ,
-         Ks*(teta_int - teta_ext) + ds*(tetad_int - tetad_ext) - Js_ext*TETADD_EXT - Kh*(teta_ext - teta_h) - dhs*(tetad_ext - tetad_h) == 0 ,
-         Kh*(teta_ext - teta_h) + dhs*(tetad_ext - tetad_h) - TETADD_H*Jh - tetad_h*dh == 0 ];
+         Ks*(teta_int - teta_ext) + ds*(tetad_int - tetad_ext) - Js_ext*TETADD_EXT   == 0 ];
  
-vars   = [ TETADD_ACT TETADD_INT TETADD_EXT TETADD_H ];
+vars   = [ TETADD_ACT TETADD_INT TETADD_EXT ];
 %%
 eqns_mat = [ eqns ,  
              TETAD_ACT == tetad_act ,
              TETAD_INT == tetad_int ,
-             TETAD_EXT == tetad_ext ,
-             TETAD_H   == tetad_h ];  
+             TETAD_EXT == tetad_ext ];  
           
-vars_mat = [ TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT TETAD_H TETADD_H];
+vars_mat = [ TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT ];
 
-[TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT TETAD_H TETADD_H] = solve(eqns_mat, vars_mat)
+[TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT ] = solve(eqns_mat, vars_mat)
 
 %%
 %STATE SPACE MODEL
 %state =  [ motor position , motor velocity , Internal torque sensor position , Internal torque sensor velocity , External torque sensor position , External torque sensor velocity , Trunk position , Trunk Velocity ]
 %inputs = [ motor torque  ]
 
-eqns_mat_form = [ TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT TETAD_H ];
-vars_mat_form = [ teta_act tetad_act teta_int tetad_int teta_ext tetad_ext teta_h   ];
+eqns_mat_form = [ TETAD_ACT TETADD_ACT TETAD_INT TETADD_INT TETAD_EXT TETADD_EXT  ];
+vars_mat_form = [ teta_act tetad_act teta_int tetad_int teta_ext tetad_ext    ];
 ns = length(vars_mat_form); % Number of States
 
 [A,nB] = equationsToMatrix( eqns_mat_form , vars_mat_form ); 
 
 A_eq = A;
 Bt = -nB;
-
-[B_eq,~] = equationsToMatrix( Bt , [ Tm , tetad_h  ] );
-C_eq = [ 0 , 0  , Ks , ds , -Ks , -ds, 0  ]  ;
-D_eq = [ 0 , 0 ]; 
-
-%% Transfer Function 
-syms s
-
-% H(s) = Y(s) / U(s) = C*(sI-A)^(-1)*B + D
-disp(' ')
-disp('The symbolic transfer function is:')
-TF = simplify(  C_eq*[ (s*eye(ns,ns) - A_eq )^(-1) ]*B_eq  + D_eq , 'Steps',100 );
-pretty(TF)
-disp(' ')
-
-%%
-
+[B_eq,~] = equationsToMatrix( Bt , [ Tm  ] );
 
 %% System Parametes from Data sheet
 J_act = [0.000306 +  0.28200e-04];    % Inertia of motor rotor + harmonic drive , kilogram metre squared [kg. m2]
@@ -83,7 +66,7 @@ rg = 160;                             % Gear Ratio of harmonic drive
 Js_int = 1.1e-4 ;                     % Inertia of Internal Torque Sensor Ring + Metal Coupling  
 Js_ext = 9.58e-4 ;                    % Inertia of External Torque Sensor Ring
 Kg = 2.7e4;                           % Harmonic Drive Stiffness  [Nm/rad]
-ds = 0;                               % Torque Sensor Damping Ratio [Nm.Sec/rad]
+ds = 0.001;                               % Torque Sensor Damping Ratio [Nm.Sec/rad]
 Ks = 8.1853e4*1.4;                    % Torque Sensor Stiffness  [Nm/rad]
 dg = 0.65;                            % Harmonic Drive Damping Ratio [Nm.Sec/rad]
 dgs = 6;                              % Damping Ratio between torque sensor and harmonic drive [Nm.Sec/rad]
@@ -99,83 +82,19 @@ Trq_mot_nom = .56;                    % Nominal motor torque [Nm]
 Ts = -1;                              % Sampling Time
 
 %%
-A_eq 
-A_lin = eval(A_eq);
-B_eq 
-B_lin = eval(B_eq);
-C_eq
-C_lin = eval(C_eq);
-D_lin = zeros(1,2)
-
 A = eval(A_eq)
 B = eval(B_eq)
-C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
-      0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
- 
-D = 0
-
-C_lq = [ 0 , 0  , 0 , 0 , Kh , 0, -Kh  ];
-C_lq_2 = eye(7,7);
-
-sys_sys = ss(A,B,C_lq,0)
-
-
+C1 = eye(6,6); 
+C_ctl = [0 , 0  , Ks , ds , -Ks , -ds  ] 
+%sys_sys = ss(A,B,C1,0);
+sys_ctl = ss(A,B,C1,0);
 %%
-% nx = 7;    %Number of states
-% ny = 1;    %Number of outputs
-% %Qn = [4 2 0; 2 1 0; 0 0 1];
-% Qn = 2e4.*ones( nx , nx );
-% Rn = [.5];
-% R = eye(2,2);
-% QXU = blkdiag(0.1*eye(nx),R);
-% QWV = blkdiag(Qn,Rn);
-% %QWV = rand(8,8);
-% QI = eye(ny);
-% %%
-% %KLQG = lqg(sys_lqr,QXU,QWV)
-% KLQG1 = lqg(sys_sys,QXU,QWV,QI,'1dof')
-% 
-
-
+%save('cntl_sys.mat','sys_ctl','C_ctl');
 %%
-% sys = ss(A,B_1,C,D);
-% figure
-% hold on
-% grid on
-% set(gca,'FontSize',25)
-% pzmap(sys, 'b' );%grid;shg
-% sgrid
-% Create ylabel
-% ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create xlabel
-% xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create title
-% title('Pole-Zero Map','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontWeight','bold',...
-%     'FontSize',25);
-
+sys_lqr =  ss(A,B,C_ctl,0);
+Q = 2e10.*eye(6,6);
+R = 1;
+ctl = lqr(sys_ctl,Q,R)
 %%
-Ts = -1;
-%Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,B,C,0)
-
-Q = .5; % Process noise variance
-%R = diag([1.003 1.003]); % Sensor noise variance
-R = .5*diag(ones(1,2));
-
-% %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-[kalmf,L,~,M,Z] = kalman(Plant,Q,R)
-% 
-
-
-
+observability = rank(obsv(A,C1))
 

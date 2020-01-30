@@ -86,5 +86,10 @@ A = eval(A_eq)
 B = eval(B_eq)
 %C1 = eye(6,6); 
 C = [0 , 0  , Ks , ds , -Ks , -ds  ] 
+C_1 = eye(6,6);
 %sys_sys = ss(A,B,C1,0);
 sys_ctl = ss(A,B,C,0);
+%%
+Q = 1e1.*eye(6,6);
+R = 1;
+[K,S,P] = lqr(sys_ctl,Q,R)

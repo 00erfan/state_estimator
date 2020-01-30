@@ -74,9 +74,6 @@ TF = simplify(  C_eq*[ (s*eye(ns,ns) - A_eq )^(-1) ]*B_eq  + D_eq , 'Steps',100 
 pretty(TF)
 disp(' ')
 
-%%
-
-
 %% System Parametes from Data sheet
 J_act = [0.000306 +  0.28200e-04];    % Inertia of motor rotor + harmonic drive , kilogram metre squared [kg. m2]
 rg = 160;                             % Gear Ratio of harmonic drive
@@ -87,7 +84,7 @@ ds = 0;                               % Torque Sensor Damping Ratio [Nm.Sec/rad]
 Ks = 8.1853e4*1.4;                    % Torque Sensor Stiffness  [Nm/rad]
 dg = 0.65;                            % Harmonic Drive Damping Ratio [Nm.Sec/rad]
 dgs = 6;                              % Damping Ratio between torque sensor and harmonic drive [Nm.Sec/rad]
-bm = 0.4e-3;                          % Friction between motor and harmonic drive [Nm.Sec/rad] 
+bm = 4.7698e-04;                      % Friction between motor and harmonic drive [Nm.Sec/rad] 
 dhs = 0;                              % Damping between trunk and torque sensor [Nm.Sec/rad]
 Kh = 1125;                            % Trunk Stiffness [Nm/rad] 
 W = 75;                               % Human Weight
@@ -100,82 +97,41 @@ Ts = -1;                              % Sampling Time
 
 %%
 A_eq 
-A_lin = eval(A_eq);
+A_lin = subs(A_eq);
 B_eq 
-B_lin = eval(B_eq);
+B_lin = subs(B_eq);
 C_eq
-C_lin = eval(C_eq);
+C_lin = subs(C_eq);
 D_lin = zeros(1,2)
 
-A = eval(A_eq)
-B = eval(B_eq)
+A = double(A_lin)
+A(7,7) = - 1e6;
+B = double(B_lin)
 C = [ 0 , 1  , 0  ,  0 ,  0  ,  0 , 0;
       0 , 0  , Ks , ds , -Ks , -ds, 0  ] 
- 
-D = 0
+        
+Ct = [ 0 , 0 , 0  , dhs , Kh  , -dhs , -Kh ]
+  
+C = double( subs( C) ) 
+Ct = double( subs( Ct) ) 
 
-C_lq = [ 0 , 0  , 0 , 0 , Kh , 0, -Kh  ];
-C_lq_2 = eye(7,7);
+D = zeros(2,2)
 
-sys_sys = ss(A,B,C_lq,0)
+Ai = [ A  , zeros(7,1);
+      -Ct , zeros(1,1)]
+Bi = [ B(:,1) ; zeros(1,1) ]
 
+sys_sys = ss(A,B,C,D)   % Steady Space for the Model with 7 states
 
-%%
-% nx = 7;    %Number of states
-% ny = 1;    %Number of outputs
-% %Qn = [4 2 0; 2 1 0; 0 0 1];
-% Qn = 2e4.*ones( nx , nx );
-% Rn = [.5];
-% R = eye(2,2);
-% QXU = blkdiag(0.1*eye(nx),R);
-% QWV = blkdiag(Qn,Rn);
-% %QWV = rand(8,8);
-% QI = eye(ny);
-% %%
-% %KLQG = lqg(sys_lqr,QXU,QWV)
-% KLQG1 = lqg(sys_sys,QXU,QWV,QI,'1dof')
-% 
-
-
-%%
-% sys = ss(A,B_1,C,D);
-% figure
-% hold on
-% grid on
-% set(gca,'FontSize',25)
-% pzmap(sys, 'b' );%grid;shg
-% sgrid
-% Create ylabel
-% ylabel('Imaginary Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create xlabel
-% xlabel('Real Axis (seconds^{-1})','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontSize',25,...
-%     'Visible','on');
-% 
-% Create title
-% title('Pole-Zero Map','HitTest','off','Units','pixels',...
-%     'HorizontalAlignment','center',...
-%     'FontWeight','bold',...
-%     'FontSize',25);
-
-%%
-Ts = -1;
-%Plant = ss(A,B,C,D, Ts,'inputname','u' ,'outputname','y');
-Plant = ss(A,B,C,0)
-
-Q = .5; % Process noise variance
-%R = diag([1.003 1.003]); % Sensor noise variance
-R = .5*diag(ones(1,2));
-
-% %[kalmf,L,~,M,Z] = kalman(Plant,Q,R,'delayed');
-[kalmf,L,~,M,Z] = kalman(Plant,Q,R)
-% 
-
-
-
-
+Qk = 1;
+Rk = 1;
+%% 
+Q = 1e1.*eye(8,8);
+Q(8,8) = 1e3;
+R = 1;
+N = zeros(8,1);
+% PSM = [Q N;N' R];
+% eig(PSM);
+% eig(A);
+[K,S,P] = lqr(Ai,Bi,Q,R)
+% chol(PSM);
