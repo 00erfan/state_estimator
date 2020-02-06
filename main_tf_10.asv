@@ -135,16 +135,9 @@ Ob = [ C ; C*Ab ; C*(Ab^2) ; C*(Ab^3) ; C*(Ab^4) ; C*(Ab^5) ; C*(Ab^6) ]
 Qk = 1;
 Rk = 1;
 %% 
-Q = eye(8,8);
-Q(1,1) = 10;
-Q(2,2) = 100;
-Q(3,3) = 10;
-Q(4,4) = 100;
-Q(5,5) = 10;
-Q(6,6) = 100;
-Q(7,7) = 5;
-Q(8,8) = 3e3;
-R = .5;
+Q = 1e1.*eye(8,8);
+Q(8,8) = 1e3;
+R = 1;
 N = zeros(8,1);
 % PSM = [Q N;N' R];
 % eig(PSM);
@@ -152,4 +145,7 @@ N = zeros(8,1);
 [K,S,P] = lqr(Ai,Bi,Q,R)
 % chol(PSM);
 
-%%
+%% Nyquist
+Ci = zeros(1,8);
+Ci(1,8) = 1;
+syse = ss( Ai, Bi , Ci
