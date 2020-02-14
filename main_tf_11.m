@@ -137,46 +137,39 @@ v_vel = .1e-6;
 v_trq = 35e-3;
 w_trq = .1e-3;
 w_vel = .15e-3;
-Qkp = diag([ 10e-14 , 1.225e-3]);
-Qk = zeros(7,7);
-Qk(2,2) = Qkp(1,1);
-Qk(7,7) = Qkp(2,2);
+Qk = diag([ 10e-14 , 1.225e-3]);
 Rk = diag([ 10e-8 , 2.25e-8]);
 Tsk = .001;
 
-% Qk = eye(7,7);
-% Rk = eye(2,2);
-
-%[kest,L_k,P_k] = kalman(sys_sys,Qk,Rk)
-
 %% Controllability 
-Ai = [ A  , zeros(7,1);
-      -Ct , zeros(1,1)]
 
 Co = ctrb(Ai,Bi);
-unco = length(Ai) - rank(Co,tol)
+unco = length(A) - rank(Co,tol)
+
+Ai = [ Ab  , zeros(7,1);
+      -Ct , zeros(1,1)]
 
 %%
-% Qk = 1;
-% Rk = 1;
+Qk = 1;
+Rk = 1;
 %% 
 Q = eye(8,8);
-Q(1,1) = 1e5;
-Q(2,2) = 1e5;
-Q(3,3) = 1e8;
-Q(4,4) = 1e8;
-Q(5,5) = 1e8;
-Q(6,6) = 1e8;
-Q(7,7) = 1e8;
-Q(8,8) = 1e10;
-R = 1;
+Q(1,1) = 1e1;
+Q(2,2) = 1e1;
+Q(3,3) = 1e1;
+Q(4,4) = 1e1;
+Q(5,5) = 1e1;
+Q(6,6) = 1e1;
+Q(7,7) = 1e1;
+Q(8,8) = 1e2;
+R = .6;
 N = zeros(8,1);
 % PSM = [Q N;N' R];
 % eig(PSM);
 % eig(A);
 [K,S,P] = lqr(Ai,Bi,Q,R)
 % chol(PSM);
-%%
 
+%%
 
 
