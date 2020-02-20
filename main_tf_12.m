@@ -133,7 +133,7 @@ v_trq = 35e-3;
 w_trq = .1e-3;
 w_vel = .15e-3;
  %Qk = diag([10e0, 10e0, 1.225e0, 1.225e0, 1.225e0, 1.225e0 , 1.225e0]);
- Qk = .5.*eye(7,7);
+ Qk = 2.*eye(7,7);
  Rk = diag([ 10e-8 , 2.25e-8]);
 Tsk = .001;
 %%
@@ -143,11 +143,11 @@ Bi = [ B_sys(1:6,1) ; zeros(1,1) ];
 Q_lq = eye(7,7);
 Q_lq(1,1) = 5e0;
 Q_lq(2,2) = 5e0;
-Q_lq(3,3) = 2e1;
+Q_lq(3,3) = 1e1;
 Q_lq(4,4) = 1e1;
 Q_lq(5,5) = 1e1;
 Q_lq(6,6) = 1e1;
-Q_lq(7,7) = 3e2;
+Q_lq(7,7) = 2e2;
 R_lq = 1.*eye(1,1);
 [K_lq,S_lq,P_lq] = lqr(Ai,Bi,Q_lq,R_lq)
 %%
@@ -165,8 +165,8 @@ Qiii(3,3) = 2e1;
 Qiii(4,4) = 2e1;
 Qiii(5,5) = 2e1;
 Qiii(6,6) = 2e1;
-Qiii(7,7) = 7e1;
-Qiii(8,8) = 9e2;
+Qiii(7,7) = 2e1;
+Qiii(8,8) = 5e2;
 
 [K_lq3,S_lq3,P_lq3] = lqr(Aiii,Biii,Qiii,R_lq);
 
