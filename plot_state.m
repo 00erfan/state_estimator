@@ -26,7 +26,7 @@ figure
 hold on
 set(gca,'FontSize',25)
 %plot( TEMPO , ((ACT_DATA - EST_DATA)./ACT_DATA)*100  , 'k','LineWidth' , 5);grid;shg
-plot( TEMPO , (ACT_DATA - EST_DATA)  , 'k','LineWidth' , 5);grid;shg
+plot( TEMPO , (ACT_DATA - EST_DATA)  , 'k','LineWidth' , 3);grid;shg
 
 xlabel('Time [s]')
 %ylabel('Error on \Delta \tau_{h} [%]')
@@ -36,7 +36,7 @@ grid on
 figure
 hold on
 set(gca,'FontSize',25)
-plot( TEMPO , MOT_TRQ   , 'k','LineWidth' , 5);grid;shg
+plot( TEMPO , MOT_TRQ   , 'k','LineWidth' , 3);grid;shg
 xlabel('Time [s]')
 ylabel('Torque [Nm]')
 grid on
@@ -50,16 +50,16 @@ plot( TEMPO , INT_DATA  , ':r','LineWidth' , 5);grid;shg
 
 xlabel('Time [s]')
 ylabel('Velocity [rad/s]')
-legend('Estimated Velocity' , 'Actual Velocity' )
+legend('Estimated Velocity' , 'Measured Velocity' )
 grid on
 
 figure
 hold on
 set(gca,'FontSize',25)
 %plot( TEMPO , ((ACT_DATA - EST_DATA)./ACT_DATA)*100  , 'k','LineWidth' , 5);grid;shg
-plot( TEMPO , (INT_DATA -INT_EST_DATA)  , 'k','LineWidth' , 5);grid;shg
+plot( TEMPO , (INT_DATA -INT_EST_DATA)  , 'k','LineWidth' , 3);grid;shg
 
 xlabel('Time [s]')
 %ylabel('Error on \Delta \tau_{h} [%]')
-ylabel('Error on \Delta \theta_{s int}')
+ylabel('Error on \Delta \theta^{\cdot}_{m}')
 grid on

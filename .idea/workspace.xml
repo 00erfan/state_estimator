@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b6ad231f-60b7-4db9-a919-1cdceecf96b9" name="Default Changelist" comment="" />
+    <list default="true" id="b6ad231f-60b7-4db9-a919-1cdceecf96b9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,6 +20,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/Java" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -33,9 +36,13 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="169" key="com.intellij.ide.util.TipDialog" timestamp="1582215731000">
+    <state x="421" y="100" key="FileChooserDialogImpl" timestamp="1582393760031">
       <screen x="0" y="0" width="1280" height="689" />
     </state>
-    <state x="337" y="169" key="com.intellij.ide.util.TipDialog/0.0.1280.689/0.-1080.1920.1050@0.0.1280.689" timestamp="1582215731000" />
+    <state x="421" y="100" key="FileChooserDialogImpl/0.0.1280.689/0.-1080.1920.1050@0.0.1280.689" timestamp="1582393760031" />
+    <state x="337" y="169" key="com.intellij.ide.util.TipDialog" timestamp="1582393653294">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state x="337" y="169" key="com.intellij.ide.util.TipDialog/0.0.1280.689/0.-1080.1920.1050@0.0.1280.689" timestamp="1582393653294" />
   </component>
 </project>

@@ -146,8 +146,8 @@ Q(3,3) = 1e7;
 Q(4,4) = 1e7;
 Q(5,5) = 1e7;
 Q(6,6) = 1e7;
-Q(7,7) = 5e13;
-R = 1;
+Q(7,7) = 1e13;
+R = 1e12;
 [K_lq,S_lq,P_lq] = lqr(Ai,Bi,Q,R)
 
 %When  tetad_h is constant teta_h is a ramp
