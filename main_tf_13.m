@@ -1,4 +1,4 @@
-clear all
+        clear all
 close all
 clc
 %%
@@ -139,6 +139,7 @@ D_klm = D_sys;
 Ai = [ A_sys(1:6 , 1:6)  , zeros(6,1);
       -Ct(: , 1:6 )     , zeros(1,1) ]
 Bi = [ B_sys(1:6 , 1) ; zeros(1,1) ]
+
 Q = eye(7,7);
 Q(1,1) = 1e5;
 Q(2,2) = 1e5;
